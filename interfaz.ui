@@ -49,7 +49,7 @@
    <widget class="QLabel" name="lblHora">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>380</x>
       <y>90</y>
       <width>49</width>
       <height>16</height>
@@ -113,7 +113,7 @@
     <widget class="QLabel" name="lblIconoClima">
      <property name="geometry">
       <rect>
-       <x>50</x>
+       <x>40</x>
        <y>30</y>
        <width>49</width>
        <height>16</height>
@@ -154,9 +154,9 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>130</y>
+      <y>140</y>
       <width>171</width>
-      <height>121</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="title">
@@ -167,20 +167,20 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>111</width>
+       <width>71</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Temperatura sensor:</string>
+      <string>Temperatura:</string>
      </property>
     </widget>
     <widget class="QLabel" name="lblTempArduino">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>80</x>
        <y>30</y>
-       <width>41</width>
+       <width>49</width>
        <height>16</height>
       </rect>
      </property>
@@ -204,7 +204,7 @@
     <widget class="QLabel" name="lblLuz">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>50</y>
        <width>49</width>
        <height>16</height>
@@ -232,32 +232,6 @@
       <rect>
        <x>50</x>
        <y>70</y>
-       <width>49</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>90</y>
-       <width>91</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Horas dormidas:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_9">
-     <property name="geometry">
-      <rect>
-       <x>110</x>
-       <y>90</y>
        <width>49</width>
        <height>16</height>
       </rect>
