@@ -1,42 +1,7 @@
 [
     {
-        "nombre": "Nombre:Tomas",
-        "correo": "Correo:tomibuttazzoni@gmail.com",
-        "password": "Contrasena:Mate2017"
-    },
-    {
-        "nombre": "Nombre:Renzo",
-        "correo": "Correo:renzo@gmail.com",
-        "password": "Contrasena:paila"
-    },
-    {
-        "nombre": "Nombre:Francisco",
-        "correo": "Correo:Aybar@gmail.com",
-        "password": "Contrasena:1234"
-    },
-    {
-        "nombre": "Nombre: Renzo",
-        "correo": "Correo: renzo@gmail.com",
-        "password": "Contrase\u00f1a: paila"
-    },
-    {
-        "nombre": "Nombre: Tomas",
-        "correo": "Correo: tomibuttazzoni@gmail.com",
-        "password": "Contrase\u00f1a: Mate2017"
-    },
-    {
-        "nombre": "Nombre: abril",
-        "correo": "Correo: abril@gmail.com",
-        "password": "Contrase\u00f1a: 123"
-    },
-    {
-        "nombre": "Nombre: p",
-        "correo": "Correo: pp@gmail.com",
-        "password": "Contrase\u00f1a: pp"
-    },
-    {
-        "nombre": "Nombre: santi",
-        "correo": "Correo: s.martin@gmail.com",
-        "password": "Contrase\u00f1a: 501"
+        "nombre": "Mateo",
+        "correo": "mateo@gmail.com",
+        "password": "pepe1234"
     }
 ]
