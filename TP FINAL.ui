@@ -50,7 +50,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Nombre:</string>
+     <string>Nombre: </string>
     </property>
    </widget>
    <widget class="QLineEdit" name="txtMail">
@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Correo:</string>
+     <string>Correo: </string>
     </property>
    </widget>
    <widget class="QLineEdit" name="txtPass">
@@ -76,7 +76,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Contrasena:</string>
+     <string>Contraseña: </string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnRegistro">
@@ -95,14 +95,14 @@
    <widget class="QLabel" name="lblError">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>260</x>
       <y>290</y>
-      <width>141</width>
+      <width>261</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Error o Confirmado</string>
+     <string/>
     </property>
    </widget>
   </widget>
@@ -125,24 +125,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>btnLogin</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>presionar()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>362</x>
-     <y>159</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>295</x>
-     <y>242</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>presionar()</slot>
  </slots>
