@@ -1,21 +1,93 @@
 import sys
 import json
+import os
 import urllib.request
 from datetime import datetime
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from Tp_Final import Ui_MainWindow
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCore import QFile
+from ui_principal import Ui_MainWindow
+from ui_datos import Ui_MainWindow
+
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Archivo de usuarios
+        self.archivo_usuarios = "usuarios.json"
+        if not os.path.exists(self.archivo_usuarios):
+            with open(self.archivo_usuarios, "w") as f:
+                json.dump([], f)
+
+    def crear_cuenta(self):
+        print("Crear cuenta")
+        nombre = self.ui.txtNombre.text().strip()
+        correo = self.ui.txtMail.text().strip()
+        password = self.ui.txtPass.text().strip()
+
+        if not nombre or not correo or not password:
+            self.mostrar_mensaje("Por favor complete todos los campos", "error")
+            return
+
+        with open(self.archivo_usuarios, "r") as f:
+            usuarios = json.load(f)
+
+        for usuario in usuarios:
+            if usuario["correo"] == correo:
+                self.mostrar_mensaje("Error: el correo ya está registrado", "error")
+                return
+
+        usuarios.append({
+            "nombre": nombre,
+            "correo": correo,
+            "password": password
+        })
+
+        with open(self.archivo_usuarios, "w") as f:
+            json.dump(usuarios, f, indent=4)
+
+        self.mostrar_mensaje(" Cuenta creada con éxito", "exito")
+
+    def iniciar_sesion(self):
+        print("iniciar sesion")
+        correo = self.ui.txtMail.text().strip()
+        password = self.ui.txtPass.text().strip()
+
+        with open(self.archivo_usuarios, "r") as f:
+            usuarios = json.load(f)
+
+        for usuario in usuarios:
+            if usuario["correo"] == correo and usuario["password"] == password:
+                self.mostrar_mensaje(f"Bienvenido, {usuario['nombre']} 👋", "exito")
+                self.abrir_ventana_principal(usuario["nombre"])
+                return
+
+        self.mostrar_mensaje("Correo o contraseña incorrectos", "error")
+
+    def mostrar_mensaje(self, texto, tipo):
+        self.ui.lblError.setText(texto)
+        color = "red" if tipo == "error" else "green"
+        self.ui.lblError.setStyleSheet(f"color: {color}; font-weight: bold;")
+
+    def abrir_ventana_principal(self, nombre_usuario):
+        self.ventana_principal = VentanaPrincipal(nombre_usuario)
+        self.ventana_principal.show()
+        self.close()  # cierra la ventana de login
+
+
+
+class VentanaPrincipal(QMainWindow):
+    def __init__(self, nombre_usuario):
+        super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # --- Conectar botones ---
-        self.ui.btnSalir.clicked.connect(self.salir)
-        self.ui.btnActualizar.clicked.connect(self.actualizar_datos)
-        self.ui.btnActualizarClima.clicked.connect(self.actualizar_clima)
+        # Mostrar mensaje de bienvenida si existe el label
+        if hasattr(self.ui, "lblBienvenida"):
+            self.ui.lblBienvenida.setText(f"¡Bienvenido, {nombre_usuario}! ")
+
 
         # --- Mostrar hora y clima iniciales ---
         self.actualizar_datos()
@@ -39,7 +111,6 @@ class MainWindow(QMainWindow):
                 "latitude=-31.4167&longitude=-64.1833&current=temperature_2m,weather_code"
             )
 
-            # Pedimos los datos sin usar 'requests'
             with urllib.request.urlopen(url) as response:
                 data = json.loads(response.read().decode())
 
@@ -55,7 +126,6 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", f"No se pudo actualizar el clima:\n{e}")
 
     def descripcion_clima(self, codigo):
-        """Convierte el código numérico del clima en una descripción legible."""
         condiciones = {
             0: "Despejado ☀️",
             1: "Mayormente despejado 🌤️",
@@ -71,9 +141,9 @@ class MainWindow(QMainWindow):
         return condiciones.get(codigo, "Desconocido")
 
 
-# === BLOQUE PRINCIPAL ===
+# ========== BLOQUE PRINCIPAL ==========
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    ventana = MainWindow()
+    ventana.show()
     sys.exit(app.exec())
