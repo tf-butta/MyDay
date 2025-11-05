@@ -6,27 +6,14 @@ from datetime import datetime
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
-from Tp_Final import Ui_MainWindow  # tu clase generada desde principal.ui
+from sub_prueba import Ui_MainWindow
+from Tp_Final import Ui_MainWindow
 
 
 
-class VentanaLogin(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        # Cargar interfaz .ui (pantalla de login)
-        loader = QUiLoader()
-        ui_file = QFile("TP FINAL.ui")
-        if not ui_file.exists():
-            print(" ERROR: No se encontró el archivo TP FINAL.ui")
-            sys.exit(1)
-        ui_file.open(QFile.ReadOnly)
-        self.ui = loader.load(ui_file, self)
-        ui_file.close()
-
-        # Conectar botones
-        self.ui.btnLogin.clicked.connect(self.iniciar_sesion)
-        self.ui.btnRegistro.clicked.connect(self.crear_cuenta)
 
         # Archivo de usuarios
         self.archivo_usuarios = "usuarios.json"
@@ -35,6 +22,7 @@ class VentanaLogin(QMainWindow):
                 json.dump([], f)
 
     def crear_cuenta(self):
+        print("Crear cuenta")
         nombre = self.ui.txtNombre.text().strip()
         correo = self.ui.txtMail.text().strip()
         password = self.ui.txtPass.text().strip()
@@ -63,6 +51,7 @@ class VentanaLogin(QMainWindow):
         self.mostrar_mensaje(" Cuenta creada con éxito", "exito")
 
     def iniciar_sesion(self):
+        print("iniciar sesion")
         correo = self.ui.txtMail.text().strip()
         password = self.ui.txtPass.text().strip()
 
@@ -99,10 +88,6 @@ class VentanaPrincipal(QMainWindow):
         if hasattr(self.ui, "lblBienvenida"):
             self.ui.lblBienvenida.setText(f"¡Bienvenido, {nombre_usuario}! ")
 
-        # --- Conectar botones ---
-        self.ui.btnSalir.clicked.connect(self.salir)
-        self.ui.btnActualizar.clicked.connect(self.actualizar_datos)
-        self.ui.btnActualizarClima.clicked.connect(self.actualizar_clima)
 
         # --- Mostrar hora y clima iniciales ---
         self.actualizar_datos()
@@ -159,6 +144,6 @@ class VentanaPrincipal(QMainWindow):
 # ========== BLOQUE PRINCIPAL ==========
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ventana = VentanaLogin()
-    ventana.ui.show()
+    ventana = MainWindow()
+    ventana.show()
     sys.exit(app.exec())

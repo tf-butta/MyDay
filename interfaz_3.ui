@@ -73,10 +73,10 @@ QStatusBar {
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>210</x>
       <y>30</y>
-      <width>321</width>
-      <height>31</height>
+      <width>401</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -95,7 +95,7 @@ QStatusBar {
      <rect>
       <x>320</x>
       <y>90</y>
-      <width>71</width>
+      <width>121</width>
       <height>20</height>
      </rect>
     </property>
@@ -212,9 +212,9 @@ QStatusBar {
     <widget class="QLabel" name="lblIconoClima">
      <property name="geometry">
       <rect>
-       <x>60</x>
+       <x>30</x>
        <y>50</y>
-       <width>51</width>
+       <width>111</width>
        <height>31</height>
       </rect>
      </property>
@@ -232,7 +232,7 @@ QStatusBar {
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="lblDescripcionClima">
+    <widget class="QLabel" name="lblTemperaturaClima">
      <property name="geometry">
       <rect>
        <x>60</x>
@@ -255,9 +255,9 @@ QStatusBar {
     <widget class="QPushButton" name="btnActualizarClima">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>20</x>
        <y>80</y>
-       <width>111</width>
+       <width>121</width>
        <height>41</height>
       </rect>
      </property>
@@ -309,7 +309,7 @@ QStatusBar {
       </font>
      </property>
      <property name="text">
-      <string>Temperatura sensor:</string>
+      <string>T Sensor: </string>
      </property>
     </widget>
     <widget class="QLabel" name="lblTempArduino">
@@ -520,7 +520,7 @@ QStatusBar {
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>33</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

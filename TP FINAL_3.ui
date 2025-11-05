@@ -25,9 +25,9 @@
    <widget class="QPushButton" name="btnLogin">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>273</x>
       <y>230</y>
-      <width>94</width>
+      <width>101</width>
       <height>26</height>
      </rect>
     </property>
@@ -63,7 +63,7 @@ QPushButton:pressed {
      <rect>
       <x>250</x>
       <y>30</y>
-      <width>291</width>
+      <width>361</width>
       <height>31</height>
      </rect>
     </property>
@@ -93,7 +93,10 @@ QPushButton:pressed {
      </font>
     </property>
     <property name="text">
-     <string>Nombre: </string>
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string extracomment="Nombre:">Nombre:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="txtMail">
@@ -112,7 +115,10 @@ QPushButton:pressed {
      </font>
     </property>
     <property name="text">
-     <string>Correo: </string>
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string extracomment="Correo:">Correo:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="txtPass">
@@ -135,7 +141,10 @@ QPushButton:pressed {
 </string>
     </property>
     <property name="text">
-     <string>Contraseña: </string>
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string extracomment="Contrasenia:">Contrasenia:</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnRegistro">
@@ -143,7 +152,7 @@ QPushButton:pressed {
      <rect>
       <x>400</x>
       <y>230</y>
-      <width>94</width>
+      <width>101</width>
       <height>26</height>
      </rect>
     </property>
@@ -200,7 +209,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>33</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTP_Final">
@@ -213,8 +222,43 @@ QPushButton:pressed {
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnLogin</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>iniciar_sesion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>365</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnRegistro</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>crear_cuenta()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>465</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>577</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>presionar()</slot>
+  <slot>iniciar_sesion()</slot>
+  <slot>crear_cuenta()</slot>
  </slots>
 </ui>
