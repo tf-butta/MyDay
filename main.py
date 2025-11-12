@@ -8,6 +8,10 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 from ui_main import Ui_MainWindow as uiMain
 from ui_datos import Ui_MainWindow as uiDatos
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import random
 
 
 
@@ -92,26 +96,24 @@ class VentanaPrincipal(QMainWindow):
         self.ui = uiDatos()
         self.ui.setupUi(self)
 
-        # Mostrar mensaje de bienvenida si existe el label
+        self.nombre_usuario = nombre_usuario
+
+        # Mostrar mensaje de bienvenida
         if hasattr(self.ui, "lblBienvenida"):
             self.ui.lblBienvenida.setText(f"¡Bienvenido, {nombre_usuario}! ")
 
+        # Conectar botones
+        
+        self.ui.btnSalir.clicked.connect(self.salir)
 
-        # --- Mostrar hora y clima iniciales ---
+        # Mostrar datos iniciales
         self.actualizar_datos()
         self.actualizar_clima()
 
     # === BOTÓN SALIR ===
     def salir(self):
         self.close()
-
-    # === BOTÓN ACTUALIZAR DATOS ===
-    def actualizar_datos(self):
-        ahora = datetime.now()
-        self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
-        self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
-
-    # === BOTÓN ACTUALIZAR CLIMA ===
+    
     def actualizar_clima(self):
         try:
             url = (
@@ -133,6 +135,7 @@ class VentanaPrincipal(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Error", f"No se pudo actualizar el clima:\n{e}")
 
+    
     def descripcion_clima(self, codigo):
         condiciones = {
             0: "Despejado ☀️",
@@ -147,6 +150,61 @@ class VentanaPrincipal(QMainWindow):
             80: "Tormentas ⛈️",
         }
         return condiciones.get(codigo, "Desconocido")
+
+    # === BOTÓN ACTUALIZAR DATOS ===
+    def actualizar_datos(self):
+        ahora = datetime.now()
+        self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
+        self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
+
+        # Simulamos los datos de Arduino
+        temp = 23.5
+        luz = "Alta"
+        estado = "Activo"
+        horas_dormidas = 7
+
+        # Mostrar los valores en la interfaz
+        self.ui.lblTempArduino.setText(f"{temp} °C")
+        self.ui.lblLuz.setText(luz)
+        self.ui.lblEstado.setText(estado)
+        self.ui.label_9.setText(str(horas_dormidas))
+
+    # === BOTÓN ENVIAR RESUMEN ===
+    def enviar_resumen(self):
+        # Obtiene datos de la interfaz
+        resumen = (
+            f"Resumen del día para {self.nombre_usuario}:\n\n"
+            f"Hora actual: {self.ui.lblHora.text()}\n"
+            f"Fecha: {self.ui.lblFecha.text()}\n"
+            f"Temperatura: {self.ui.lblTempArduino.text()}\n"
+            f"Luz: {self.ui.lblLuz.text()}\n"
+            f"Estado: {self.ui.lblEstado.text()}\n"
+            f"Horas dormidas: {self.ui.label_9.text()}\n"
+            f"Clima: {self.ui.lblIconoClima.text()} ({self.ui.lblTemperaturaClima.text()})\n"
+        )
+
+        try:
+            # Configuración del correo
+            remitente = "tu_correo@gmail.com"   # <-- Cambiá esto
+            contraseña = "tu_contraseña"        # <-- Y esto (o usá un token)
+            destinatario = "destinatario@gmail.com"  # <-- o el mail del usuario logueado
+
+            msg = MIMEMultipart()
+            msg["From"] = remitente
+            msg["To"] = destinatario
+            msg["Subject"] = "Resumen diario - Asistente de Rutina"
+
+            msg.attach(MIMEText(resumen, "plain"))
+
+            # Enviar correo por SMTP
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(remitente, contraseña)
+                server.send_message(msg)
+
+            QMessageBox.information(self, "Éxito", "Resumen enviado correctamente por mail.")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"No se pudo enviar el correo:\n{e}")
 
 
 if __name__ == "__main__": #checkea si el script está siendo ejecutado como el prog principal (no importado como un modulo).

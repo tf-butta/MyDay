@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'interfaz_3IXOdOy.ui'
+## Form generated from reading UI file 'interfaz_3dyEFeg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.3
 ##
@@ -186,6 +186,8 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.btnActualizar.clicked.connect(MainWindow.actualizar_datos)
+        self.btnEnviarMail.clicked.connect(MainWindow.enviar_resumen)
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
