@@ -63,5 +63,10 @@
         "nombre": "Lautaro",
         "correo": "l.martinez.jarchum@itsv.edu.ar",
         "password": "12345"
+    },
+    {
+        "nombre": "tomi",
+        "correo": "t.buttazzoni.solis@itsv.edu.ar",
+        "password": "12345"
     }
 ]

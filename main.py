@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
             if usuario["correo"] == correo and usuario["password"] == password:
                 self.mostrar_mensaje(f"Bienvenido, {usuario['nombre']} 👋", "exito")
                 
-                self.abrir_ventana_principal(usuario["nombre"])
+                self.abrir_ventana_principal(usuario["nombre"], usuario["correo"])
                 return
 
 
@@ -84,19 +84,20 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         color = "red" if tipo == "error" else "green"
         self.ui.lblError.setStyleSheet(f"color: {color}; font-weight: bold;")
         
-    def abrir_ventana_principal(self, nombre_usuario):
-        self.ventana_principal = VentanaPrincipal(nombre_usuario)
+    def abrir_ventana_principal(self, nombre_usuario, correo_usuario):
+        self.ventana_principal = VentanaPrincipal(nombre_usuario, correo_usuario)
         self.ventana_principal.show()
-        self.close()  # cierra la ventana de login
+        self.close()  
         
 
 class VentanaPrincipal(QMainWindow):
-    def __init__(self, nombre_usuario):
+    def __init__(self, nombre_usuario, correo_usuario):
         super().__init__()
         self.ui = uiDatos()
         self.ui.setupUi(self)
 
         self.nombre_usuario = nombre_usuario
+        self.correo_usuario = correo_usuario
 
         # Mostrar mensaje de bienvenida
         if hasattr(self.ui, "lblBienvenida"):
@@ -176,9 +177,9 @@ class VentanaPrincipal(QMainWindow):
 
         try:
             # Configuración del correo
-            remitente = "tomibuttazzoni@gmail.com"   # <-- Cambiá esto
-            contraseña = "ewyoglgcdjsykzgp"       # <-- Y esto (o usá un token)
-            destinatario = "correo"  # <-- o el mail del usuario logueado
+            remitente = "l.martinez.jarchum@itsv.edu.ar"   # <-- Cambiá esto
+            contraseña = "tgvprvbjqjhqzzxo"       # <-- Y esto (o usá un token)
+            destinatario = self.correo_usuario    # <-- o el mail del usuario logueado
 
             msg = MIMEMultipart()
             msg["From"] = remitente
