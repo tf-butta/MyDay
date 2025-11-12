@@ -48,5 +48,20 @@
         "nombre": "Tomas",
         "correo": "tomibuttazzoni@gmail.com",
         "password": "Mate2017"
+    },
+    {
+        "nombre": "Lauti",
+        "correo": "l@gmail.com",
+        "password": "l"
+    },
+    {
+        "nombre": "q",
+        "correo": "q@gmail.com`",
+        "password": "q"
+    },
+    {
+        "nombre": "Lautaro",
+        "correo": "l.martinez.jarchum@itsv.edu.ar",
+        "password": "12345"
     }
 ]

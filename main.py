@@ -176,9 +176,9 @@ class VentanaPrincipal(QMainWindow):
 
         try:
             # Configuración del correo
-            remitente = "tu_correo@gmail.com"   # <-- Cambiá esto
-            contraseña = "tu_contraseña"        # <-- Y esto (o usá un token)
-            destinatario = "destinatario@gmail.com"  # <-- o el mail del usuario logueado
+            remitente = "tomibuttazzoni@gmail.com"   # <-- Cambiá esto
+            contraseña = "ewyoglgcdjsykzgp"       # <-- Y esto (o usá un token)
+            destinatario = "correo"  # <-- o el mail del usuario logueado
 
             msg = MIMEMultipart()
             msg["From"] = remitente
