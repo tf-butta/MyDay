@@ -6,7 +6,9 @@ from datetime import datetime
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
-from ui_main import Ui_MainWindow
+from ui_main import Ui_MainWindow as uiMain
+from ui_datos import Ui_MainWindow as uiDatos
+
 
 
 BASE_DE_DATOS = "./usuarios.json"
@@ -29,7 +31,7 @@ def save_database(db):
 class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que es una clase de PyQt para crear la ventana principal de la app.
     def __init__(self): #constructor method. Se ejuecuta cuando la instancia de la clase es creada.
         super().__init__() #llama al constructor de la clase QMainWindow, para inicializar las funcionalidades básicas de la ventana principal de la app.
-        self.ui = Ui_MainWindow() #crea una instancia de Ui_MainWindow class, la cual es la definición de la interfaz del usuario para la ventana principal.
+        self.ui = uiMain() #crea una instancia de Ui_MainWindow class, la cual es la definición de la interfaz del usuario para la ventana principal.
         self.ui.setupUi(self) #llama al método setupUi() de la instancia Ui_MainWindow, para setear los componenetes de la interfaz del usuario dentro de main window.
 
     def iniciar_sesion(self):
@@ -71,6 +73,7 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         })
 
         save_database(usuarios)
+        self.mostrar_mensaje(" Cuenta creada con éxito", "exito")
         
     def mostrar_mensaje(self, texto, tipo):
         self.ui.lblError.setText(texto)
@@ -83,7 +86,67 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         self.close()  # cierra la ventana de login
         
 
+class VentanaPrincipal(QMainWindow):
+    def __init__(self, nombre_usuario):
+        super().__init__()
+        self.ui = uiDatos()
+        self.ui.setupUi(self)
 
+        # Mostrar mensaje de bienvenida si existe el label
+        if hasattr(self.ui, "lblBienvenida"):
+            self.ui.lblBienvenida.setText(f"¡Bienvenido, {nombre_usuario}! ")
+
+
+        # --- Mostrar hora y clima iniciales ---
+        self.actualizar_datos()
+        self.actualizar_clima()
+
+    # === BOTÓN SALIR ===
+    def salir(self):
+        self.close()
+
+    # === BOTÓN ACTUALIZAR DATOS ===
+    def actualizar_datos(self):
+        ahora = datetime.now()
+        self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
+        self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
+
+    # === BOTÓN ACTUALIZAR CLIMA ===
+    def actualizar_clima(self):
+        try:
+            url = (
+                "https://api.open-meteo.com/v1/forecast?"
+                "latitude=-31.4167&longitude=-64.1833&current=temperature_2m,weather_code"
+            )
+
+            with urllib.request.urlopen(url) as response:
+                data = json.loads(response.read().decode())
+
+            temperatura = data["current"]["temperature_2m"]
+            codigo_clima = data["current"]["weather_code"]
+
+            descripcion = self.descripcion_clima(codigo_clima)
+
+            self.ui.lblTemperaturaClima.setText(f"{temperatura} °C")
+            self.ui.lblIconoClima.setText(descripcion)
+
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"No se pudo actualizar el clima:\n{e}")
+
+    def descripcion_clima(self, codigo):
+        condiciones = {
+            0: "Despejado ☀️",
+            1: "Mayormente despejado 🌤️",
+            2: "Parcialmente nublado ⛅",
+            3: "Nublado ☁️",
+            45: "Niebla 🌫️",
+            51: "Llovizna 🌧️",
+            61: "Lluvia ligera 🌧️",
+            63: "Lluvia moderada 🌦️",
+            65: "Lluvia intensa 🌧️",
+            80: "Tormentas ⛈️",
+        }
+        return condiciones.get(codigo, "Desconocido")
 
 
 if __name__ == "__main__": #checkea si el script está siendo ejecutado como el prog principal (no importado como un modulo).
