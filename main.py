@@ -157,18 +157,9 @@ class VentanaPrincipal(QMainWindow):
         self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
         self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
 
-        # Simulamos los datos de Arduino
-        temp = 23.5
-        luz = "Alta"
-        estado = "Activo"
-        horas_dormidas = 7
+        
 
-        # Mostrar los valores en la interfaz
-        self.ui.lblTempArduino.setText(f"{temp} °C")
-        self.ui.lblLuz.setText(luz)
-        self.ui.lblEstado.setText(estado)
-        self.ui.label_9.setText(str(horas_dormidas))
-
+        
     # === BOTÓN ENVIAR RESUMEN ===
     def enviar_resumen(self):
         # Obtiene datos de la interfaz

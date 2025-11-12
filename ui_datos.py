@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'interfaz_3dyEFeg.ui'
+## Form generated from reading UI file 'interfaz_3gulKNN.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.3
 ##
@@ -93,7 +93,7 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font1)
         self.lblHora = QLabel(self.centralwidget)
         self.lblHora.setObjectName(u"lblHora")
-        self.lblHora.setGeometry(QRect(390, 90, 49, 21))
+        self.lblHora.setGeometry(QRect(390, 90, 101, 21))
         self.lblHora.setFont(font1)
         self.label_3 = QLabel(self.centralwidget)
         self.label_3.setObjectName(u"label_3")
@@ -101,7 +101,7 @@ class Ui_MainWindow(object):
         self.label_3.setFont(font1)
         self.lblFecha = QLabel(self.centralwidget)
         self.lblFecha.setObjectName(u"lblFecha")
-        self.lblFecha.setGeometry(QRect(360, 110, 71, 16))
+        self.lblFecha.setGeometry(QRect(360, 110, 131, 16))
         self.lblFecha.setFont(font1)
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
@@ -113,7 +113,7 @@ class Ui_MainWindow(object):
         self.label_4.setFont(font1)
         self.lblIconoClima = QLabel(self.groupBox)
         self.lblIconoClima.setObjectName(u"lblIconoClima")
-        self.lblIconoClima.setGeometry(QRect(30, 50, 111, 31))
+        self.lblIconoClima.setGeometry(QRect(10, 50, 151, 31))
         self.lblIconoClima.setFont(font1)
         self.lblIconoClima.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lblTemperaturaClima = QLabel(self.groupBox)
@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font1)
         self.lblLuz = QLabel(self.groupBox_2)
         self.lblLuz.setObjectName(u"lblLuz")
-        self.lblLuz.setGeometry(QRect(40, 50, 49, 16))
+        self.lblLuz.setGeometry(QRect(40, 50, 121, 16))
         self.lblLuz.setFont(font1)
         self.label_7 = QLabel(self.groupBox_2)
         self.label_7.setObjectName(u"label_7")
@@ -154,15 +154,15 @@ class Ui_MainWindow(object):
         self.label_7.setFont(font1)
         self.lblEstado = QLabel(self.groupBox_2)
         self.lblEstado.setObjectName(u"lblEstado")
-        self.lblEstado.setGeometry(QRect(50, 70, 49, 16))
+        self.lblEstado.setGeometry(QRect(60, 70, 101, 16))
         self.lblEstado.setFont(font1)
         self.label_8 = QLabel(self.groupBox_2)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setGeometry(QRect(10, 90, 91, 16))
+        self.label_8.setGeometry(QRect(10, 90, 101, 16))
         self.label_8.setFont(font1)
         self.label_9 = QLabel(self.groupBox_2)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setGeometry(QRect(100, 90, 49, 16))
+        self.label_9.setGeometry(QRect(110, 90, 49, 16))
         self.label_9.setFont(font1)
         self.btnActualizar = QPushButton(self.centralwidget)
         self.btnActualizar.setObjectName(u"btnActualizar")

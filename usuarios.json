@@ -43,5 +43,10 @@
         "nombre": "qqqq",
         "correo": "qqqq",
         "password": "qqqq"
+    },
+    {
+        "nombre": "Tomas",
+        "correo": "tomibuttazzoni@gmail.com",
+        "password": "Mate2017"
     }
 ]
