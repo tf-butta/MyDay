@@ -3,5 +3,25 @@
         "nombre": "Mateo",
         "correo": "mateo@gmail.com",
         "password": "pepe1234"
+    },
+    {
+        "nombre": "p",
+        "correo": "pp@gmail.com",
+        "password": "pp"
+    },
+    {
+        "nombre": "d",
+        "correo": "d",
+        "password": "d"
+    },
+    {
+        "nombre": "f",
+        "correo": "f",
+        "password": "f"
+    },
+    {
+        "nombre": "h",
+        "correo": "h",
+        "password": "h"
     }
 ]

@@ -33,8 +33,19 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         self.ui.setupUi(self) #llama al método setupUi() de la instancia Ui_MainWindow, para setear los componenetes de la interfaz del usuario dentro de main window.
 
     def iniciar_sesion(self):
-        pass
-    
+        print("iniciar sesion")
+        correo = self.ui.txtMail.text().strip()
+        password = self.ui.txtPass.text().strip()
+
+        usuarios = get_database()
+
+        for usuario in usuarios:
+            if usuario["correo"] == correo and usuario["password"] == password:
+                self.mostrar_mensaje(f"Bienvenido, {usuario['nombre']} 👋", "exito")
+                self.abrir_ventana_principal(usuario["nombre"])
+                return
+
+
     def crear_cuenta(self):
         print("Crear cuenta")
         nombre = self.ui.txtNombre.text().strip()
@@ -59,7 +70,6 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         })
 
         save_database(usuarios)
-        print("Cuenta creada con exito")
         
         
 if __name__ == "__main__": #checkea si el script está siendo ejecutado como el prog principal (no importado como un modulo).
