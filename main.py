@@ -5,7 +5,7 @@ import urllib.request
 from datetime import datetime
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, QTimer   # ★★★ AGREGADO QTimer
 from ui_main import Ui_MainWindow as uiMain
 from ui_datos import Ui_MainWindow as uiDatos
 import smtplib
@@ -13,6 +13,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 
+# ★★★ Arduino
+import serial
 
 
 BASE_DE_DATOS = "./usuarios.json"
@@ -21,22 +23,20 @@ def get_database():
     if not os.path.exists(BASE_DE_DATOS):
         with open(BASE_DE_DATOS, "w") as db_file:
             json.dump([], db_file, indent=4)
-            
     with open(BASE_DE_DATOS, "r") as db_file:
         return json.load(db_file)
-
 
 def save_database(db):
     with open(BASE_DE_DATOS, "w") as db_file:
         json.dump(db, db_file, indent=4)
-    
 
 
-class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que es una clase de PyQt para crear la ventana principal de la app.
-    def __init__(self): #constructor method. Se ejuecuta cuando la instancia de la clase es creada.
-        super().__init__() #llama al constructor de la clase QMainWindow, para inicializar las funcionalidades básicas de la ventana principal de la app.
-        self.ui = uiMain() #crea una instancia de Ui_MainWindow class, la cual es la definición de la interfaz del usuario para la ventana principal.
-        self.ui.setupUi(self) #llama al método setupUi() de la instancia Ui_MainWindow, para setear los componenetes de la interfaz del usuario dentro de main window.
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui = uiMain()
+        self.ui.setupUi(self)
 
     def iniciar_sesion(self):
         print("iniciar sesion")
@@ -48,10 +48,8 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
         for usuario in usuarios:
             if usuario["correo"] == correo and usuario["password"] == password:
                 self.mostrar_mensaje(f"Bienvenido, {usuario['nombre']} 👋", "exito")
-                
                 self.abrir_ventana_principal(usuario["nombre"], usuario["correo"])
                 return
-
 
     def crear_cuenta(self):
         print("Crear cuenta")
@@ -64,7 +62,6 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
             return
 
         usuarios = get_database()
-
         for usuario in usuarios:
             if usuario["correo"] == correo:
                 self.mostrar_mensaje("Error: el correo ya está registrado", "error")
@@ -78,7 +75,7 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
 
         save_database(usuarios)
         self.mostrar_mensaje(" Cuenta creada con éxito", "exito")
-        
+
     def mostrar_mensaje(self, texto, tipo):
         self.ui.lblError.setText(texto)
         color = "red" if tipo == "error" else "green"
@@ -87,8 +84,13 @@ class MainWindow(QMainWindow):  #Clase MainWindow heredada de QMainWindow, que e
     def abrir_ventana_principal(self, nombre_usuario, correo_usuario):
         self.ventana_principal = VentanaPrincipal(nombre_usuario, correo_usuario)
         self.ventana_principal.show()
-        self.close()  
-        
+        self.close()
+
+
+
+# =======================================================================
+# ========================== VENTANA PRINCIPAL ===========================
+# =======================================================================
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self, nombre_usuario, correo_usuario):
@@ -99,22 +101,43 @@ class VentanaPrincipal(QMainWindow):
         self.nombre_usuario = nombre_usuario
         self.correo_usuario = correo_usuario
 
-        # Mostrar mensaje de bienvenida
         if hasattr(self.ui, "lblBienvenida"):
             self.ui.lblBienvenida.setText(f"¡Bienvenido, {nombre_usuario}! ")
 
-        # Conectar botones
-        
         self.ui.btnSalir.clicked.connect(self.salir)
 
-        # Mostrar datos iniciales
+        # -------------------------
+        # MOSTRAR DATOS INICIALES
+        # -------------------------
         self.actualizar_datos()
         self.actualizar_clima()
 
-    # === BOTÓN SALIR ===
+        # ★★★ TIMER PARA ACTUALIZAR HORA AUTOMÁTICA
+        self.timer_hora = QTimer()
+        self.timer_hora.timeout.connect(self.actualizar_datos)
+        self.timer_hora.start(1000)   # cada 1 segundo
+
+        # ★★★ CONECTAR A ARDUINO
+        try:
+            self.arduino = serial.Serial("/dev/ttyACM0", 9600, timeout=1)
+        except:
+            self.arduino = None
+            QMessageBox.warning(self, "Arduino", "No se pudo conectar al Arduino.")
+
+        # ★★★ TIMER PARA LEER ARDUINO
+        self.timer_arduino = QTimer()
+        self.timer_arduino.timeout.connect(self.leer_arduino)
+        self.timer_arduino.start(1000)
+
+
+    # === SALIR ===
     def salir(self):
+        if hasattr(self, "arduino") and self.arduino:
+            self.arduino.close()   # ★★★ cerrar puerto
         self.close()
-    
+
+
+    # === ACTUALIZAR CLIMA ===
     def actualizar_clima(self):
         try:
             url = (
@@ -136,7 +159,7 @@ class VentanaPrincipal(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Error", f"No se pudo actualizar el clima:\n{e}")
 
-    
+
     def descripcion_clima(self, codigo):
         condiciones = {
             0: "Despejado ☀️",
@@ -152,18 +175,42 @@ class VentanaPrincipal(QMainWindow):
         }
         return condiciones.get(codigo, "Desconocido")
 
-    # === BOTÓN ACTUALIZAR DATOS ===
+    # === ACTUALIZAR HORA ===
     def actualizar_datos(self):
         ahora = datetime.now()
         self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
         self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
 
-        
 
-        
-    # === BOTÓN ENVIAR RESUMEN ===
+    # ★★★ LEER ARDUINO
+    def leer_arduino(self):
+        if not self.arduino:
+            return
+
+        try:
+            linea = self.arduino.readline().decode().strip()
+
+            if linea == "":
+                return
+
+            partes = linea.split("|")
+            datos = {}
+
+            for p in partes:
+                k, v = p.split(":")
+                datos[k] = v
+
+            self.ui.lblTempArduino.setText(datos.get("TEMP", "--") + " °C")
+            self.ui.lblLuz.setText(datos.get("LUZ", "--"))
+            self.ui.lblEstado.setText(datos.get("ESTADO", "--"))
+            self.ui.label_9.setText(datos.get("SUEÑO", "--") + " Hs")
+
+        except Exception as e:
+            print("Error leyendo Arduino:", e)
+
+
+    # === ENVIAR RESUMEN ===
     def enviar_resumen(self):
-        # Obtiene datos de la interfaz
         resumen = (
             f"Resumen del día para {self.nombre_usuario}:\n\n"
             f"Hora actual: {self.ui.lblHora.text()}\n"
@@ -176,19 +223,16 @@ class VentanaPrincipal(QMainWindow):
         )
 
         try:
-            # Configuración del correo
-            remitente = "l.martinez.jarchum@itsv.edu.ar"   # <-- Cambiá esto
-            contraseña = "tgvprvbjqjhqzzxo"       # <-- Y esto (o usá un token)
-            destinatario = self.correo_usuario    # <-- o el mail del usuario logueado
+            remitente = "t.buttazzoni.solis@itsv.edu.ar"
+            contraseña = "ewyoglgcdjsykzgp"
+            destinatario = self.correo_usuario
 
             msg = MIMEMultipart()
             msg["From"] = remitente
             msg["To"] = destinatario
             msg["Subject"] = "Resumen diario - Asistente de Rutina"
-
             msg.attach(MIMEText(resumen, "plain"))
 
-            # Enviar correo por SMTP
             with smtplib.SMTP("smtp.gmail.com", 587) as server:
                 server.starttls()
                 server.login(remitente, contraseña)
@@ -199,8 +243,11 @@ class VentanaPrincipal(QMainWindow):
             QMessageBox.warning(self, "Error", f"No se pudo enviar el correo:\n{e}")
 
 
-if __name__ == "__main__": #checkea si el script está siendo ejecutado como el prog principal (no importado como un modulo).
-    app = QApplication(sys.argv)    # Crea un Qt widget, la cual va ser nuestra ventana.
-    window = MainWindow() #crea una intancia de MainWindow 
-    window.show()   # IMPORTANT!!!!! la ventanas estan ocultas por defecto.
-    sys.exit(app.exec_()) # Start the event loop.
+
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())

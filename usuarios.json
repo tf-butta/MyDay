@@ -68,5 +68,10 @@
         "nombre": "tomi",
         "correo": "t.buttazzoni.solis@itsv.edu.ar",
         "password": "12345"
+    },
+    {
+        "nombre": "Sodero",
+        "correo": "j.sodero@itsv.edu.ar",
+        "password": "123"
     }
 ]
