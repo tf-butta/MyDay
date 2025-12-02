@@ -11,6 +11,7 @@ from ui_datos import Ui_MainWindow as uiDatos
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from PySide6.QtGui import QPixmap
 import random
 
 # ★★★ Arduino
@@ -37,19 +38,35 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = uiMain()
         self.ui.setupUi(self)
+        self.ui.label.setPixmap(QPixmap("Mydaylogo.png"))
 
     def iniciar_sesion(self):
         print("iniciar sesion")
         correo = self.ui.txtMail.text().strip()
         password = self.ui.txtPass.text().strip()
 
+        if not correo or not password:
+            self.mostrar_mensaje("Por favor complete los campos de ingreso", "error")
+            return
+
         usuarios = get_database()
+        encontrado = False
+
+        for usuario in usuarios:
+            if usuario["correo"] == correo:
+                encontrado = True
 
         for usuario in usuarios:
             if usuario["correo"] == correo and usuario["password"] == password:
                 self.mostrar_mensaje(f"Bienvenido, {usuario['nombre']} 👋", "exito")
                 self.abrir_ventana_principal(usuario["nombre"], usuario["correo"])
                 return
+            
+        if encontrado == False:
+            self.mostrar_mensaje("Error, el correo no esta registrado en MyDay", "error")
+        else:
+            self.mostrar_mensaje("Error: Contraseña incorrecta", "error")
+
 
     def crear_cuenta(self):
         print("Crear cuenta")
@@ -60,8 +77,15 @@ class MainWindow(QMainWindow):
         if not nombre or not correo or not password:
             self.mostrar_mensaje("Por favor complete todos los campos", "error")
             return
+        
+        if ("@gmail.com" not in correo and 
+            "@hotmail.com" not in correo and 
+            "@itsv.edu.ar" not in correo):
+            self.mostrar_mensaje("Error el mail es inválido", "error")
+            return
 
         usuarios = get_database()
+        
         for usuario in usuarios:
             if usuario["correo"] == correo:
                 self.mostrar_mensaje("Error: el correo ya está registrado", "error")
@@ -85,7 +109,6 @@ class MainWindow(QMainWindow):
         self.ventana_principal = VentanaPrincipal(nombre_usuario, correo_usuario)
         self.ventana_principal.show()
         self.close()
-
 
 
 # =======================================================================
@@ -119,7 +142,7 @@ class VentanaPrincipal(QMainWindow):
 
         # ★★★ CONECTAR A ARDUINO
         try:
-            self.arduino = serial.Serial("/dev/ttyACM0", 9600, timeout=1)
+            self.arduino = serial.Serial("COM3", 9600, timeout=1)
         except:
             self.arduino = None
             QMessageBox.warning(self, "Arduino", "No se pudo conectar al Arduino.")
@@ -182,31 +205,74 @@ class VentanaPrincipal(QMainWindow):
         self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
 
 
-    # ★★★ LEER ARDUINO
+    # LEER ARDUINO
     def leer_arduino(self):
         if not self.arduino:
             return
 
+        # --- LECTURA RAPIDA Y LIMPIA ---
+        ultima_linea_valida = None
+        while self.arduino.in_waiting > 0:
+            try:
+                linea = self.arduino.readline().decode('utf-8', errors='ignore').strip()
+                if linea: ultima_linea_valida = linea
+            except: pass
+
+        if not ultima_linea_valida: return
+
+        # Filtro básico para evitar errores
+        if "|" not in ultima_linea_valida: return
+
         try:
-            linea = self.arduino.readline().decode().strip()
-
-            if linea == "":
-                return
-
-            partes = linea.split("|")
+            partes = ultima_linea_valida.split("|")
             datos = {}
-
             for p in partes:
-                k, v = p.split(":")
-                datos[k] = v
+                if ":" in p:
+                    k, v = p.split(":")
+                    datos[k] = v
 
-            self.ui.lblTempArduino.setText(datos.get("TEMP", "--") + " °C")
-            self.ui.lblLuz.setText(datos.get("LUZ", "--"))
-            self.ui.lblEstado.setText(datos.get("ESTADO", "--"))
-            self.ui.label_9.setText(datos.get("SUEÑO", "--") + " Hs")
+            # 1. TEMPERATURA
+            if "TEMP" in datos:
+                self.ui.lblTempArduino.setText(datos["TEMP"] + " °C")
+
+            # 2. LUZ
+            if "LDR" in datos:
+                try:
+                    val = int(datos["LDR"])
+                    self.ui.lblLuz.setText("Noche 🌑" if val < 500 else "Día ☀️")
+                except: pass
+
+            # 3. ESTADO
+            if "ESTADO" in datos:
+                self.ui.lblEstado.setText(datos["ESTADO"])
+
+            # 4. TIEMPO DE SUEÑO (FORMATO INTELIGENTE)
+            if "SUEÑO" in datos:
+                try:
+                    # Arduino manda SEGUNDOS totales (ej: 3665)
+                    total_segundos = float(datos["SUEÑO"])
+                    total_segundos = int(total_segundos) # Quitamos decimales
+                    
+                    # CÁLCULO DE HORAS, MINUTOS Y SEGUNDOS
+                    horas = total_segundos // 3600
+                    minutos = (total_segundos % 3600) // 60
+                    segundos = total_segundos % 60
+                    
+                    # ARMADO DEL TEXTO SEGÚN EL TIEMPO
+                    if horas > 0:
+                        texto_tiempo = f"{horas} h {minutos} m {segundos} s"
+                    elif minutos > 0:
+                        texto_tiempo = f"{minutos} m {segundos} s"
+                    else:
+                        texto_tiempo = f"{segundos} s"
+                        
+                    self.ui.label_9.setText(texto_tiempo)
+                    
+                except: 
+                    self.ui.label_9.setText("0 s")
 
         except Exception as e:
-            print("Error leyendo Arduino:", e)
+            print("Error:", e)
 
 
     # === ENVIAR RESUMEN ===

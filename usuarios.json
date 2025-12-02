@@ -73,5 +73,25 @@
         "nombre": "Sodero",
         "correo": "j.sodero@itsv.edu.ar",
         "password": "123"
+    },
+    {
+        "nombre": "sdad",
+        "correo": "dsds",
+        "password": "dsda"
+    },
+    {
+        "nombre": "w",
+        "correo": "w",
+        "password": "w"
+    },
+    {
+        "nombre": "s",
+        "correo": "s@gmail.com",
+        "password": "s"
+    },
+    {
+        "nombre": "Pichi",
+        "correo": "a@gmail.com",
+        "password": "a"
     }
 ]
