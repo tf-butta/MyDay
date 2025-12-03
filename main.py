@@ -11,6 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QLineEdit
 import serial
 
 
@@ -23,7 +24,7 @@ def get_database():
     with open(BASE_DE_DATOS, "r") as db_file:
         return json.load(db_file)
 
-def save_database(db):
+def save_database(db):  
     with open(BASE_DE_DATOS, "w") as db_file:
         json.dump(db, db_file, indent=4)
 
@@ -35,6 +36,7 @@ class MainWindow(QMainWindow):
         self.ui = uiMain()
         self.ui.setupUi(self)
         self.ui.label.setPixmap(QPixmap("Mydaylogo.png"))
+        self.ui.txtPass.setEchoMode(QLineEdit.EchoMode.Password)
 
     def iniciar_sesion(self):
         print("iniciar sesion")
@@ -42,7 +44,7 @@ class MainWindow(QMainWindow):
         password = self.ui.txtPass.text().strip()
 
         if not correo or not password:
-            self.mostrar_mensaje("Por favor complete los campos de ingreso", "error")
+            self.mostrar_mensaje("Por favor complete los campos de ingreso" , "error")
             return
 
         usuarios = get_database()
