@@ -4,17 +4,13 @@ import os
 import urllib.request
 from datetime import datetime
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QTimer   # ★★★ AGREGADO QTimer
+from PySide6.QtCore import QTimer 
 from ui_main import Ui_MainWindow as uiMain
 from ui_datos import Ui_MainWindow as uiDatos
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PySide6.QtGui import QPixmap
-import random
-
-# ★★★ Arduino
 import serial
 
 
@@ -111,9 +107,8 @@ class MainWindow(QMainWindow):
         self.close()
 
 
-# =======================================================================
-# ========================== VENTANA PRINCIPAL ===========================
-# =======================================================================
+# VENTANA PRINCIPAL 
+
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self, nombre_usuario, correo_usuario):
@@ -129,38 +124,30 @@ class VentanaPrincipal(QMainWindow):
 
         self.ui.btnSalir.clicked.connect(self.salir)
 
-        # -------------------------
-        # MOSTRAR DATOS INICIALES
-        # -------------------------
         self.actualizar_datos()
         self.actualizar_clima()
 
-        # ★★★ TIMER PARA ACTUALIZAR HORA AUTOMÁTICA
         self.timer_hora = QTimer()
         self.timer_hora.timeout.connect(self.actualizar_datos)
         self.timer_hora.start(1000)   # cada 1 segundo
 
-        # ★★★ CONECTAR A ARDUINO
         try:
-            self.arduino = serial.Serial("COM3", 9600, timeout=1)
+            self.arduino = serial.Serial("COM4", 9600, timeout=1)
         except:
             self.arduino = None
             QMessageBox.warning(self, "Arduino", "No se pudo conectar al Arduino.")
 
-        # ★★★ TIMER PARA LEER ARDUINO
         self.timer_arduino = QTimer()
         self.timer_arduino.timeout.connect(self.leer_arduino)
         self.timer_arduino.start(1000)
 
 
-    # === SALIR ===
     def salir(self):
         if hasattr(self, "arduino") and self.arduino:
-            self.arduino.close()   # ★★★ cerrar puerto
+            self.arduino.close()  
         self.close()
 
 
-    # === ACTUALIZAR CLIMA ===
     def actualizar_clima(self):
         try:
             url = (
@@ -198,19 +185,16 @@ class VentanaPrincipal(QMainWindow):
         }
         return condiciones.get(codigo, "Desconocido")
 
-    # === ACTUALIZAR HORA ===
     def actualizar_datos(self):
         ahora = datetime.now()
         self.ui.lblHora.setText(ahora.strftime("%H:%M:%S"))
         self.ui.lblFecha.setText(ahora.strftime("%d/%m/%Y"))
 
 
-    # LEER ARDUINO
     def leer_arduino(self):
         if not self.arduino:
             return
 
-        # --- LECTURA RAPIDA Y LIMPIA ---
         ultima_linea_valida = None
         while self.arduino.in_waiting > 0:
             try:
@@ -220,7 +204,6 @@ class VentanaPrincipal(QMainWindow):
 
         if not ultima_linea_valida: return
 
-        # Filtro básico para evitar errores
         if "|" not in ultima_linea_valida: return
 
         try:
@@ -231,34 +214,27 @@ class VentanaPrincipal(QMainWindow):
                     k, v = p.split(":")
                     datos[k] = v
 
-            # 1. TEMPERATURA
             if "TEMP" in datos:
                 self.ui.lblTempArduino.setText(datos["TEMP"] + " °C")
 
-            # 2. LUZ
             if "LDR" in datos:
                 try:
                     val = int(datos["LDR"])
-                    self.ui.lblLuz.setText("Noche 🌑" if val < 500 else "Día ☀️")
+                    self.ui.lblLuz.setText("Noche 🌑" if val < 100 else "Día ☀️")
                 except: pass
 
-            # 3. ESTADO
             if "ESTADO" in datos:
                 self.ui.lblEstado.setText(datos["ESTADO"])
 
-            # 4. TIEMPO DE SUEÑO (FORMATO INTELIGENTE)
             if "SUEÑO" in datos:
                 try:
-                    # Arduino manda SEGUNDOS totales (ej: 3665)
                     total_segundos = float(datos["SUEÑO"])
-                    total_segundos = int(total_segundos) # Quitamos decimales
+                    total_segundos = int(total_segundos)
                     
-                    # CÁLCULO DE HORAS, MINUTOS Y SEGUNDOS
                     horas = total_segundos // 3600
                     minutos = (total_segundos % 3600) // 60
                     segundos = total_segundos % 60
                     
-                    # ARMADO DEL TEXTO SEGÚN EL TIEMPO
                     if horas > 0:
                         texto_tiempo = f"{horas} h {minutos} m {segundos} s"
                     elif minutos > 0:
@@ -275,7 +251,6 @@ class VentanaPrincipal(QMainWindow):
             print("Error:", e)
 
 
-    # === ENVIAR RESUMEN ===
     def enviar_resumen(self):
         resumen = (
             f"Resumen del día para {self.nombre_usuario}:\n\n"
